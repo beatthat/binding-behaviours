@@ -1,11 +1,11 @@
 {
   "name": "tests",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "",
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "unity-binding-behaviours": "github:beatthat/unity-binding-behaviours#0.0.1"
+    "unity-binding-behaviours": "github:beatthat/unity-binding-behaviours#0.0.3"
   },
   "devDependencies": {
     "babel-core": "^5.8.23",
