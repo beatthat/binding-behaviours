@@ -1,6 +1,6 @@
 {
   "name": "unity-binding-behaviours",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
   "repository": {
@@ -31,6 +31,6 @@
     "unity-pools": "beatthat/unity-pools#^0.0.5",
     "unity-common-event-types": "beatthat/unity-common-event-types#^0.0.1",
     "unity-extensions": "beatthat/unity-extensions#^0.0.1",
-    "unity-collection-extensions": "beatthat/unity-collection-extensions#^0.0.1",
+    "unity-collection-extensions": "beatthat/unity-collection-extensions#^0.0.1"
   }
 }
