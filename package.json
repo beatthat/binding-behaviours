@@ -1,6 +1,6 @@
 {
   "name": "unity-binding-behaviours",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
   "repository": {
@@ -23,6 +23,9 @@
   },
   "dependencies": {
     "ncp": "^2.0.0",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "unity-bindings": "beatthat/unity-bindings#^0.0.2",
+    "unity-notifications": "beatthat/unity-notifications#^0.0.5"
+
   }
 }
