@@ -14,13 +14,12 @@ Library
 .DS_Store
 
 node_modules
-Assets/build
-Assets/packages
-Assets/packages.meta
-Assets/Plugins/BeatThat
-Assets/Plugins/BeatThat.meta
+Assets
 manifest.json
 manifest.json.meta
 .vscode
 
 EditorTestResults.xml
+
+yarn.lock
+package-lock.json

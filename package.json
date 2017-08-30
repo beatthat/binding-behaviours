@@ -1,6 +1,6 @@
 {
   "name": "unity-binding-behaviours",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
   "repository": {
@@ -19,18 +19,19 @@
   },
   "homepage": "https://github.com/beatthat/unity-binding-behaviours",
   "scripts": {
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "install:test": "rm -f *.tgz && npm pack && cd test && npm run clean && npm install"
   },
   "dependencies": {
     "ncp": "^2.0.0",
     "mkdirp": "^0.5.1",
-    "unity-bindings": "beatthat/unity-bindings#^0.0.2",
-    "unity-properties": "beatthat/unity-properties#^0.0.2",
-    "unity-utils": "beatthat/unity-utils#^0.0.4",
-    "unity-notifications": "beatthat/unity-notifications#^0.0.6",
-    "unity-pools": "beatthat/unity-pools#^0.0.5",
-    "unity-common-event-types": "beatthat/unity-common-event-types#^0.0.1",
-    "unity-extensions": "beatthat/unity-extensions#^0.0.1",
-    "unity-collection-extensions": "beatthat/unity-collection-extensions#^0.0.1"
+    "unity-bindings": "beatthat/unity-bindings#semver:^0.0.2",
+    "unity-properties": "beatthat/unity-properties#semver:^0.0.5",
+    "unity-utils": "beatthat/unity-utils#semver:^0.0.4",
+    "unity-notifications": "beatthat/unity-notifications#semver:^0.0.9",
+    "unity-pools": "beatthat/unity-pools#semver:^0.0.5",
+    "unity-common-event-types": "beatthat/unity-common-event-types#semver:^0.0.1",
+    "unity-extensions": "beatthat/unity-extensions#semver:^0.0.1",
+    "unity-collection-extensions": "beatthat/unity-collection-extensions#semver:^0.0.1"
   }
 }
