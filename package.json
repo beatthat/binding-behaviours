@@ -1,6 +1,6 @@
 {
   "name": "unity-binding-behaviours",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
   "repository": {
@@ -20,7 +20,8 @@
   "homepage": "https://github.com/beatthat/unity-binding-behaviours",
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
-    "install:test": "rm -f *.tgz && npm pack && cd test && npm run clean && npm install"
+    "install:test": "rm -f *.tgz && npm pack && cd test && npm run clean && npm install",
+    "clean": "rm -f *.tgz && cd test && npm run clean"
   },
   "dependencies": {
     "ncp": "^2.0.0",

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace BeatThat
 {
-	public abstract class BindingBehaviour : MonoBehaviour
+	public abstract class BindingBehaviour : MonoBehaviour, HasBinding
 	{
 		
 		/// <summary>
