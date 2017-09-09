@@ -7,6 +7,11 @@ using System.Collections.Generic;
 
 namespace BeatThat
 {
+	/// <summary>
+	/// Base class for a <c>Component</c> that will bind one or more listeners.
+	/// Provides a guarantee all things bound will be unbound when this component unbinds, 
+	/// and automatically unbinds if this component's GameObject is destroyed.
+	/// </summary>
 	public abstract class BindingBehaviour : MonoBehaviour, HasBinding
 	{
 		

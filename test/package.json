@@ -8,7 +8,7 @@
     "clean": "rm -rf node_modules package-lock.json yarn.lock Library Temp Assets"
   },
   "dependencies": {
-    "unity-binding-behaviours": "../unity-binding-behaviours-0.0.10.tgz"
+    "binding-behaviours": "../binding-behaviours-0.0.11.tgz"
   },
   "devDependencies": {
     "babel-core": "^5.8.23",
