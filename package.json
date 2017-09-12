@@ -1,40 +1,40 @@
 {
-  "name": "binding-behaviours",
-  "scope": "ape",
-  "version": "0.0.12",
-  "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/beatthat/binding-behaviours.git"
-  },
-  "files": [
-    "index.js",
-    "scripts",
-    "src"
-  ],
-  "author": "larrykirschner@gmail.com",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/beatthat/binding-behaviours/issues"
-  },
-  "homepage": "https://github.com/beatthat/binding-behaviours",
-  "scripts": {
-    "postinstall": "node scripts/postinstall.js",
-    "install:test": "rm -f *.tgz && npm pack && cd test && npm run clean && npm install",
-    "clean": "rm -f *.tgz && cd test && npm run clean",
-    "sync:test2src": "rsync -rv --include '*/' --include '*.cs' --exclude '*' --prune-empty-dirs test/Assets/Plugins/${npm_package_scope}/${npm_package_name}/ ./src/${npm_package_name}/",
-    "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
-  },
-  "dependencies": {
-    "ncp": "^2.0.0",
-    "mkdirp": "^0.5.1",
-    "bindings": "beatthat/bindings#semver:^0.0.4",
-    "collections-ext": "beatthat/collections-ext#semver:^0.0.2",
-    "common-unityevent-types": "beatthat/common-unityevent-types#semver:^0.0.2",
-    "notifications": "beatthat/notifications#semver:^0.0.10",
-    "property-interfaces": "beatthat/property-interfaces#semver:^0.0.3",
-    "pools": "beatthat/pools#semver:^0.0.7",
-    "safe-refs": "beatthat/safe-refs#semver:^0.0.1"
-  }
+    "name": "binding-behaviours",
+    "scope": "ape",
+    "version": "0.0.13",
+    "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/beatthat/binding-behaviours.git"
+    },
+    "files": [
+        "index.js",
+        "scripts",
+        "src"
+    ],
+    "author": "larrykirschner@gmail.com",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/beatthat/binding-behaviours/issues"
+    },
+    "homepage": "https://github.com/beatthat/binding-behaviours",
+    "scripts": {
+        "postinstall": "node scripts/postinstall.js",
+        "install:test": "rm -f *.tgz && npm pack && cd test && npm run clean && npm install",
+        "clean": "rm -f *.tgz && cd test && npm run clean",
+        "cp:test2src": "cd test && node scripts/cp-test2src.js",
+        "overwrite:test2src": "cd test && node scripts/overwrite-test2src.js",
+        "pub:tag": "git add -A && git commit -m ${npm_package_version} && git tag -a ${npm_package_version} -m ${npm_package_version} && git push origin master && git push origin ${npm_package_version}"
+    },
+    "dependencies": {
+        "bindings": "beatthat/bindings#semver:^0.0.6",
+        "collections-ext": "beatthat/collections-ext#semver:^0.0.2",
+        "common-unityevent-types": "beatthat/common-unityevent-types#semver:^0.0.2",
+        "notifications": "beatthat/notifications#semver:^0.0.10",
+        "property-interfaces": "beatthat/property-interfaces#semver:^0.0.3",
+        "pools": "beatthat/pools#semver:^0.0.7",
+        "safe-refs": "beatthat/safe-refs#semver:^0.0.1",
+        "unity-npm-utils": "beatthat/unity-npm-utils#semver:^0.0.9"
+    }
 }
