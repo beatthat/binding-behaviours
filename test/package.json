@@ -10,7 +10,7 @@
     "overwrite:test2src": "node ./scripts/overwrite-test2src.js"
   },
   "dependencies": {
-    "binding-behaviours": "../binding-behaviours-0.0.13.tgz"
+    "binding-behaviours": "../binding-behaviours-0.0.14.tgz"
   },
   "devDependencies": {
     "babel-core": "^5.8.23",
