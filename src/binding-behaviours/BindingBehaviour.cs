@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
+using UnityEngine;
 using BeatThat;
 using BeatThat.App;
-using UnityEngine;
 using UnityEngine.Events;
+using System;
+using System.Collections.Generic;
 
 namespace BeatThat
 {

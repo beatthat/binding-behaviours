@@ -1,42 +1,35 @@
-# TEMPLATE
+When you have components that add listeners to other objects--global or otherwise--then it's important (and also tedious) to guarantee that ALL of those listener bindings get cleaned up with the listener component 'unbinds', say is deactivated or destroyed.
 
-...
+This package contains base classes for both MonoBehaviours and StateMachineBehaviour that provide methods to bind UnityEvents, Actions, Notifications, etc. and have those bindings auto unbind on a common call.
 
-## Usage
+#USAGE
 
-See the tests in the `Editor/` folder for each class for usage examples.
+```c#
+public class Foo : BindingBehaviour
+{
+    override protected void BindAll()
+    {
+        Bind("some-notification-type", () => {
+            // this will unbind when Foo::Unbind is called
+        });
 
-## Install
+        Bind<Bar>("some-notification-type-2", (bar) => {
+            // you can also bind to a notification that wants to send a param
+        });
 
-From your unity project folder:
+        Bind<Bar2>((UnityEvent<Bar2>)this.bar2, (bar2) => {
+            // also works with Unity events
+        });
 
-    npm init
-    npm install TEMPLATE --save
-    echo Assets/packages >> .gitignore
-    echo Assets/packages.meta >> .gitignore
+        Bind<Bar3>((Action<Bar3>)this.bar3, (bar3) => {
+            // also works with csharp events
+        });
+    }
 
-The package and all its dependencies will be installed in
-your Assets/packages folder.
-
-## Development
-
-Setup and run tests:
-
-    npm install
-    npm install ..
-    cd test
-    npm install
-    gulp
-
-Remember that changes made to the test folder are not saved to the package
-unless they are copied back into the source folder.
-
-To reinstall the files from the src folder, run `npm install ..` again.
-
-### Tests
-
-All tests are wrapped in `#if ...` blocks to prevent test spam.
-
-You can enable tests in: Player settings > Other Settings > Scripting Define Symbols
-
-The test key for this package is: TEMPLATE_TESTS
+    void OnDestroy()
+    {
+        // all of the above bindings automatically unbind on destroy
+        // or when Foo::Unbind is called explicitly
+    }
+}
+```
