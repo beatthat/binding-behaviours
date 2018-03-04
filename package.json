@@ -1,7 +1,7 @@
 {
   "name": "binding-behaviours",
   "scope": "ape",
-  "version": "0.0.15",
+  "version": "1.0.0",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
   "repository": {
