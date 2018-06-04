@@ -1,6 +1,6 @@
 {
   "name": "binding-behaviours",
-  "scope": "ape",
+  "scope": "beatthat",
   "version": "1.0.0",
   "description": "Base classes for components that can Bind (as listeners) to various types of events and have all those bindings cleanly/safely unbound, either with an explicit call to Unbind or when the component is destroyed.",
   "main": "index.js",
@@ -11,7 +11,9 @@
   "files": [
     "index.js",
     "scripts",
-    "src"
+    "src",
+    "Runtime",
+    "Samples"
   ],
   "author": "larrykirschner@gmail.com",
   "license": "MIT",
@@ -32,15 +34,16 @@
     "postversion": "git push && git push --tags && npm run clean"
   },
   "dependencies": {
-    "path": "^0.12.7",
-    "unity-npm-utils": "github:beatthat/unity-npm-utils#semver:^1.0.0",
     "bindings": "beatthat/bindings#semver:^1.0.0",
     "collections-ext": "beatthat/collections-ext#semver:^1.0.0",
     "common-unityevent-types": "beatthat/common-unityevent-types#semver:^1.0.0",
     "notifications": "beatthat/notifications#semver:^1.0.0",
-    "property-interfaces": "beatthat/property-interfaces#semver:^1.0.0",
+    "path": "^0.12.7",
     "pools": "beatthat/pools#semver:^1.0.0",
-    "safe-refs": "beatthat/safe-refs#semver:^1.0.0"
+    "property-interfaces": "beatthat/property-interfaces#semver:^1.0.0",
+    "safe-refs": "beatthat/safe-refs#semver:^1.0.0",
+    "services": "github:beatthat/services#semver:^1.0.0",
+    "unity-npm-utils": "github:beatthat/unity-npm-utils#semver:^1.0.0"
   },
   "devDependencies": {}
 }
