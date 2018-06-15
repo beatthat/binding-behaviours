@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
-using BeatThat.App;
+using BeatThat.CollectionsExt;
+using BeatThat.Notifications;
+using BeatThat.Pools;
+using BeatThat.Properties;
+using BeatThat.SafeRefs;
 using BeatThat.Service;
+using BeatThat.TransformPathExt;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace BeatThat
+namespace BeatThat.Bindings
 {
     /// <summary>
     /// Base class for a <c>Component</c> that will bind one or more listeners.
@@ -379,3 +384,9 @@ namespace BeatThat
 
 
 }
+
+
+
+
+
+

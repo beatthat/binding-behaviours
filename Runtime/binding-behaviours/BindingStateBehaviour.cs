@@ -1,13 +1,17 @@
-using UnityEngine;
-using BeatThat.App;
-using BeatThat;
-using UnityEngine.Events;
 using System;
+using BeatThat.CollectionsExt;
+using BeatThat.GetComponentsExt;
+using BeatThat.Notifications;
+using BeatThat.Pools;
+using BeatThat.SafeRefs;
 using BeatThat.Service;
+using BeatThat.TransformPathExt;
+using UnityEngine;
+using UnityEngine.Events;
 
-namespace BeatThat
+namespace BeatThat.Bindings
 {
-	public class BindingStateBehaviour : StateMachineBehaviour
+    public class BindingStateBehaviour : StateMachineBehaviour
 	{
 		public bool m_breakOnEnter;
 		public bool m_breakOnExit;
@@ -434,3 +438,10 @@ namespace BeatThat
 		}
 	}
 }
+
+
+
+
+
+
+

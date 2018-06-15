@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace BeatThat
+namespace BeatThat.Bindings
 {
-	public class GameObjectEvents : MonoBehaviour
+    public class GameObjectEvents : MonoBehaviour
 	{
 
 		public event System.Action<GameObject> onDisable;
@@ -26,3 +24,4 @@ namespace BeatThat
 	}
 
 }
+

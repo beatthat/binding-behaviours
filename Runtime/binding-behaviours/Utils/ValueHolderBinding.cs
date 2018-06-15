@@ -1,16 +1,19 @@
 using System;
+using BeatThat.Pools;
+using BeatThat.Properties;
+using BeatThat.SafeRefs;
 
-namespace BeatThat
+namespace BeatThat.Bindings
 {
-	/// <summary>
-	/// Binds a (reference) value to a IHasValue<T> so that on Unbind, can clear the value from the value holder.
-	/// This is useful for say, a controller whose view has a HasTexture property:
-	/// when the controller unbinds, you want that HasTexture to clear it's reference to the Texture.
-	/// Using this binding type, you can have that behaviour happen automatically when the controller unbinds, e.g.
-	/// 
-	/// <code>this.controller.Bind<Texture>(this.view.someHasTexture, this.model.someTexture); // this will auto unbind when the controller unbinds</code>
-	/// </summary>
-	public class ValueHolderBinding<T> : Binding, IDisposable, Poolable
+    /// <summary>
+    /// Binds a (reference) value to a IHasValue<T> so that on Unbind, can clear the value from the value holder.
+    /// This is useful for say, a controller whose view has a HasTexture property:
+    /// when the controller unbinds, you want that HasTexture to clear it's reference to the Texture.
+    /// Using this binding type, you can have that behaviour happen automatically when the controller unbinds, e.g.
+    /// 
+    /// <code>this.controller.Bind<Texture>(this.view.someHasTexture, this.model.someTexture); // this will auto unbind when the controller unbinds</code>
+    /// </summary>
+    public class ValueHolderBinding<T> : Binding, IDisposable, Poolable
 		where T : class
 	{
 
@@ -83,3 +86,7 @@ namespace BeatThat
 
 
 }
+
+
+
+

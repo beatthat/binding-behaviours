@@ -1,9 +1,10 @@
+using BeatThat.Pools;
+using BeatThat.Properties;
 using UnityEngine;
 using UnityEditor;
-using BeatThat.App;
+using BeatThat.Notifications;
 
-namespace BeatThat
-{
+namespace BeatThat.Bindings{
 	[CustomEditor(typeof(BindingBehaviour), true)]
 	public class BindingBehaviourEditor : UnityEditor.Editor 
 	{
@@ -69,3 +70,5 @@ namespace BeatThat
 		}
 	}
 }
+
+
