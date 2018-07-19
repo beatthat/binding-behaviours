@@ -17,7 +17,7 @@ namespace BeatThat.Bindings
     /// Provides a guarantee all things bound will be unbound when this component unbinds, 
     /// and automatically unbinds if this component's GameObject is destroyed.
     /// </summary>
-    public abstract class BindingBehaviour : MonoBehaviour, HasBinding
+    public abstract class BindingBehaviour : MonoBehaviour, HasBinding, DependencyInjectionEventHandler
 	{
 		
 		/// <summary>
@@ -26,13 +26,39 @@ namespace BeatThat.Bindings
 		/// </summary>
 		public void Bind()
 		{
-			if(!this.isBound) {
-				DependencyInjection.InjectDependencies (this);
-				BindAll();
-				this.safeBinding.BindTo(this);
-				this.isBound = true;
-			}
+            if(this.isBound) {
+                return;
+            }
+
+            if(!DependencyInjection.InjectDependencies (this)) {
+                return;
+            }
+
+            BindWithDependencies();
+			
 		}
+
+        private void BindWithDependencies()
+        {
+            if(this.isBound) {
+                return;
+            }
+
+            BindAll();
+            this.safeBinding.BindTo(this);
+            this.isBound = true;
+        }
+
+
+        virtual public void OnDependencyInjectionWaitingForServicesReady() {}
+
+        virtual public void OnWillInjectDependencies() {}
+        virtual public void OnDidInjectDependencies()
+        {
+            if(!this.isBound) {
+                BindWithDependencies();
+            }
+        }
 
         public void Rebind()
         {
@@ -337,7 +363,7 @@ namespace BeatThat.Bindings
 			Attach(b);
 		}
 
-		class MyBinding : Binding
+        class MyBinding : Binding
 		{
 			public void Unbind()
 			{
