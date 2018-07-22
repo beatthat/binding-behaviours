@@ -4,7 +4,7 @@ using BeatThat.GetComponentsExt;
 using BeatThat.Notifications;
 using BeatThat.Pools;
 using BeatThat.SafeRefs;
-using BeatThat.Service;
+using BeatThat.DependencyInjection;
 using BeatThat.TransformPathExt;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,7 +25,7 @@ namespace BeatThat.Bindings
 
 		private void Bind(Animator animator)
 		{
-			DependencyInjection.InjectDependencies (this);
+			InjectDependencies.On (this);
 
 			this.animator = animator;
 			this.gameObject = animator.gameObject;

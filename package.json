@@ -13,7 +13,9 @@
     "scripts",
     "src",
     "Runtime",
-    "Samples"
+    "Samples",
+    "README.md",
+    "readmefiles"
   ],
   "author": "larrykirschner@gmail.com",
   "license": "MIT",
@@ -44,6 +46,7 @@
     "bindings": "beatthat/bindings#semver:^1.0.0",
     "collections-ext": "beatthat/collections-ext#semver:^1.0.0",
     "common-unityevent-types": "beatthat/common-unityevent-types#semver:^1.0.0",
+    "dependency-injection": "beatthat/dependency-injection#semver:^1.0.0",
     "notifications": "beatthat/notifications#semver:^1.0.0",
     "path": "^0.12.7",
     "pools": "beatthat/pools#semver:^1.0.0",
