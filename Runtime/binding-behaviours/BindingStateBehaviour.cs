@@ -194,14 +194,14 @@ namespace BeatThat.Bindings
 		protected void SetNormalizedTime(float time)
 		{
 			if(this.animator == null) {
-				#if BT_DEBUG_UNSTRIP
+				#if UNITY_EDITOR || DEBUG_UNSTRIP
 				Debug.LogWarning("[" + Time.frameCount + "][" + this.Path() + "] " + GetType() + " SetNormalizedTime called while behaviour has no animator");
 				#endif
 				return;
 			}
 
 			if(!this.hasActiveStateInfo) {
-				#if BT_DEBUG_UNSTRIP
+				#if UNITY_EDITOR || DEBUG_UNSTRIP
 				Debug.LogWarning("[" + Time.frameCount + "][" + this.Path() + "] " + GetType() + " SetNormalizedTime called while behaviour has no active state info");
 				#endif
 				return;
@@ -431,10 +431,13 @@ namespace BeatThat.Bindings
 		{
 			this.controller = this.animator.GetComponent<T>();
 
-			if(this.controller == null) {
-				Debug.LogWarning("[" + Time.frameCount + "][" + Path() + "] " + GetType()
-					+ " failed to find controller with type " + typeof(T).Name);
-			}
+            if (this.controller == null)
+            {
+#if UNITY_EDITOR || DEBUG_UNSTRIP
+                Debug.LogWarning("[" + Time.frameCount + "][" + Path() + "] " + GetType()
+                    + " failed to find controller with type " + typeof(T).Name);
+#endif
+            }
 		}
 	}
 }
