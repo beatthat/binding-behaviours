@@ -17,7 +17,8 @@ namespace BeatThat.Bindings
     /// Provides a guarantee all things bound will be unbound when this component unbinds, 
     /// and automatically unbinds if this component's GameObject is destroyed.
     /// </summary>
-    public abstract class BindingBehaviour : MonoBehaviour, HasBinding, DependencyInjectionEventHandler
+    public abstract class BindingBehaviour : 
+    MonoBehaviour, Bindable, DependencyInjectionEventHandler
 	{
 		
 		/// <summary>
@@ -30,12 +31,14 @@ namespace BeatThat.Bindings
                 return;
             }
 
+            // TODO: this is a problem below
+            // callers need to know if bind is delayed 
+            // and they probably just assume it completed
             if(!InjectDependencies.On (this)) {
                 return;
             }
 
             BindWithDependencies();
-			
 		}
 
         private void BindWithDependencies()
@@ -110,6 +113,16 @@ namespace BeatThat.Bindings
 			GetNotifications(true).Add(b);
 			return b;
 		}
+
+        /// <summary>
+        /// Bind a component and attach it so that it will unbind when this behavior unbinds
+        /// </summary>
+        protected Binding Bind(Bindable b)
+        {
+            b.Bind();
+            Attach(b);
+            return b.binding;
+        }
 			
 		protected void Attach(Binding b)
 		{
@@ -299,11 +312,11 @@ namespace BeatThat.Bindings
 			}
 		}
 		
-		private MyBinding safeBinding
+        private BindableBinding safeBinding
 		{
 			get {
 				if(m_binding == null) {
-					m_binding = new MyBinding();
+                    m_binding = new BindableBinding();
 				}
 				return m_binding;
 			}
@@ -363,48 +376,9 @@ namespace BeatThat.Bindings
 			Attach(b);
 		}
 
-        class MyBinding : Binding
-		{
-			public void Unbind()
-			{
-				var owner = m_owner.value;
-				if(owner != null) {
-					owner.Unbind();
-					m_owner.value = null;
-				}
-			}
-
-			public void BindTo(BindingBehaviour p)
-			{
-				m_owner = new SafeRef<BindingBehaviour>(p);						
-			}
-
-			public void Invalidate()
-			{
-				m_owner.value = null;
-			}
-
-			public bool isBound 
-			{
-				get {
-					var owner = m_owner.value;
-					return owner != null && owner.isBound;
-				}
-			}
-
-			override public string ToString()
-			{
-				var owner = m_owner.value;
-				return "[Binding isBound=" + this.isBound + ", obj=" + (owner != null? owner.Path(): "null").ToString() + "]";
-			}
-
-			private SafeRef<BindingBehaviour> m_owner;
-		}
-
-
 		private ListPoolList<Binding> m_attachedBindings;
 		private NotificationBindings m_notificationBindings;
-		private MyBinding m_binding;
+        private BindableBinding m_binding;
 	}
 
 
