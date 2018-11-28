@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using BeatThat.CollectionsExt;
+using BeatThat.DependencyInjection;
 using BeatThat.Notifications;
 using BeatThat.Pools;
 using BeatThat.Properties;
-using BeatThat.SafeRefs;
-using BeatThat.DependencyInjection;
-using BeatThat.TransformPathExt;
 using UnityEngine;
 using UnityEngine.Events;
 
