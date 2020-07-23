@@ -15,48 +15,58 @@ namespace BeatThat.Bindings
     /// Provides a guarantee all things bound will be unbound when this component unbinds, 
     /// and automatically unbinds if this component's GameObject is destroyed.
     /// </summary>
-    public abstract class BindingBehaviour : 
+    public abstract class BindingBehaviour :
     MonoBehaviour, Bindable, DependencyInjectionEventHandler
-	{
-		
-		/// <summary>
-		/// Base implementation sets isBound property.
-		/// overriding implementations should call base.Bind() as last step
-		/// </summary>
-		public void Bind()
-		{
-            if(this.isBound) {
+    {
+
+        /// <summary>
+        /// Base implementation sets isBound property.
+        /// overriding implementations should call base.Bind() as last step
+        /// </summary>
+        public void Bind()
+        {
+            if (this.isBound)
+            {
                 return;
             }
-
             // TODO: this is a problem below
             // callers need to know if bind is delayed 
             // and they probably just assume it completed
-            if(!InjectDependencies.On (this)) {
+            if (!InjectDependencies.On(this))
+            {
                 return;
             }
-
             BindWithDependencies();
-		}
+        }
 
+        private bool bindInProgress { get; set; }
         private void BindWithDependencies()
         {
-            if(this.isBound) {
+            if (this.isBound || this.bindInProgress)
+            {
                 return;
             }
-
-            BindAll();
-            this.safeBinding.BindTo(this);
-            this.isBound = true;
+            this.bindInProgress = true;
+            try
+            {
+                BindAll();
+                this.safeBinding.BindTo(this);
+                this.isBound = true;
+            }
+            finally
+            {
+                this.bindInProgress = false;
+            }
         }
 
 
-        virtual public void OnDependencyInjectionWaitingForServicesReady() {}
+        virtual public void OnDependencyInjectionWaitingForServicesReady() { }
 
-        virtual public void OnWillInjectDependencies() {}
+        virtual public void OnWillInjectDependencies() { }
         virtual public void OnDidInjectDependencies()
         {
-            if(!this.isBound) {
+            if (!this.isBound)
+            {
                 BindWithDependencies();
             }
         }
@@ -66,51 +76,52 @@ namespace BeatThat.Bindings
             Unbind();
             Bind();
         }
-		
-		/// <summary>
-		/// Base implementation sets isBound property false.
-		/// overriding implementations should call base.Bind() as last step
-		/// </summary>
-	 	public void Unbind()
-		{
-			if(this.isBound) {
-				UnbindAll();
-				this.isBound = false;
-				this.safeBinding.Invalidate();
-				UnbindAllAttached();
-				UnregisterAllNotifications();
-			}
-		}
-		
-		/// <summary>
-		/// Put your controller's custom Bind code here.
-		/// </summary>
-		virtual protected void BindAll() {}
-		
-		/// <summary>
-		/// Put your controller's custom Unbind code here.
-		/// </summary>
-		virtual protected void UnbindAll() {}
 
-		/// <summary>
-		/// Register a Notification that will be automatically be unregistered when this presenter is unbound
-		/// </summary>
-		protected NotificationBinding Bind(string type, Action callback)
-		{
-			var b = NotificationBus.Add(type, callback, this);
-			GetNotifications(true).Add(b);
-			return b;
-		}
+        /// <summary>
+        /// Base implementation sets isBound property false.
+        /// overriding implementations should call base.Bind() as last step
+        /// </summary>
+        public void Unbind()
+        {
+            if (this.isBound)
+            {
+                UnbindAll();
+                this.isBound = false;
+                this.safeBinding.Invalidate();
+                UnbindAllAttached();
+                UnregisterAllNotifications();
+            }
+        }
 
-		/// <summary>
-		/// Register a Notification that will be automatically be unregistered when this presenter is unbound
-		/// </summary>
-		protected NotificationBinding Bind<T>(string type, Action<T> callback)
-		{
-			var b = NotificationBus.Add<T>(type, callback, this);
-			GetNotifications(true).Add(b);
-			return b;
-		}
+        /// <summary>
+        /// Put your controller's custom Bind code here.
+        /// </summary>
+        virtual protected void BindAll() { }
+
+        /// <summary>
+        /// Put your controller's custom Unbind code here.
+        /// </summary>
+        virtual protected void UnbindAll() { }
+
+        /// <summary>
+        /// Register a Notification that will be automatically be unregistered when this presenter is unbound
+        /// </summary>
+        protected NotificationBinding Bind(string type, Action callback)
+        {
+            var b = NotificationBus.Add(type, callback, this);
+            GetNotifications(true).Add(b);
+            return b;
+        }
+
+        /// <summary>
+        /// Register a Notification that will be automatically be unregistered when this presenter is unbound
+        /// </summary>
+        protected NotificationBinding Bind<T>(string type, Action<T> callback)
+        {
+            var b = NotificationBus.Add<T>(type, callback, this);
+            GetNotifications(true).Add(b);
+            return b;
+        }
 
         /// <summary>
         /// Bind a component and attach it so that it will unbind when this behavior unbinds
@@ -121,266 +132,274 @@ namespace BeatThat.Bindings
             Attach(b);
             return b.binding;
         }
-			
-		protected void Attach(Binding b)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(b);
-		}
 
-		/// <summary>
-		/// Attach HasBindings (usually sub presenters) so that when this presenter Unbinds, all attached HasBindings unbind automatically.
-		/// </summary>
-		/// <param name="h1">H1.</param>
-		protected void Attach(HasBinding h1)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding);
-		}
+        protected void Attach(Binding b)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(b);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding);
-			bindings.Add(h2.binding);
-		}
+        /// <summary>
+        /// Attach HasBindings (usually sub presenters) so that when this presenter Unbinds, all attached HasBindings unbind automatically.
+        /// </summary>
+        /// <param name="h1">H1.</param>
+        protected void Attach(HasBinding h1)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding);
+            bindings.Add(h2.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
-			bindings.Add(h6.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
-			HasBinding h11)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-			bindings.Add(h11.binding); 
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
-			HasBinding h11, HasBinding h12)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-			bindings.Add(h11.binding); bindings.Add(h12.binding); 
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
+            HasBinding h11)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+            bindings.Add(h11.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
-			HasBinding h11, HasBinding h12, HasBinding h13)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-			bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding); 
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
+            HasBinding h11, HasBinding h12)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+            bindings.Add(h11.binding); bindings.Add(h12.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
-			HasBinding h11, HasBinding h12, HasBinding h13, HasBinding h14)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-			bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding); bindings.Add(h14.binding); 
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
+            HasBinding h11, HasBinding h12, HasBinding h13)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+            bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding);
+        }
 
-		protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
-			HasBinding h11, HasBinding h12, HasBinding h13, HasBinding h14, HasBinding h15)
-		{
-			var bindings = GetAttachedBindings(true);
-			bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding); 
-			bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
-			bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding); bindings.Add(h14.binding); bindings.Add(h15.binding);
-		}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
+            HasBinding h11, HasBinding h12, HasBinding h13, HasBinding h14)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+            bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding); bindings.Add(h14.binding);
+        }
 
-		/// <summary>
-		/// Unbinds all dependent bindings added through AddDependentBinding
-		/// </summary>
-		protected void UnbindAllAttached()
-		{
-			
-			if(m_attachedBindings == null) {
-				return;
-			}
+        protected void Attach(HasBinding h1, HasBinding h2, HasBinding h3, HasBinding h4, HasBinding h5, HasBinding h6, HasBinding h7, HasBinding h8, HasBinding h9, HasBinding h10,
+            HasBinding h11, HasBinding h12, HasBinding h13, HasBinding h14, HasBinding h15)
+        {
+            var bindings = GetAttachedBindings(true);
+            bindings.Add(h1.binding); bindings.Add(h2.binding); bindings.Add(h3.binding); bindings.Add(h4.binding); bindings.Add(h5.binding);
+            bindings.Add(h6.binding); bindings.Add(h7.binding); bindings.Add(h8.binding); bindings.Add(h9.binding); bindings.Add(h10.binding);
+            bindings.Add(h11.binding); bindings.Add(h12.binding); bindings.Add(h13.binding); bindings.Add(h14.binding); bindings.Add(h15.binding);
+        }
 
-			for(int i = m_attachedBindings.Count - 1; i >= 0; i--) {
-				
-				Binding b = m_attachedBindings[i];
-				m_attachedBindings.RemoveAt(i);
+        /// <summary>
+        /// Unbinds all dependent bindings added through AddDependentBinding
+        /// </summary>
+        protected void UnbindAllAttached()
+        {
 
-				if(b == null) {
-					continue;
-				}
+            if (m_attachedBindings == null)
+            {
+                return;
+            }
 
-				b.Unbind();
+            for (int i = m_attachedBindings.Count - 1; i >= 0; i--)
+            {
 
-				var d = b as IDisposable;
-				if(d == null) {
-					continue;
-				}
+                Binding b = m_attachedBindings[i];
+                m_attachedBindings.RemoveAt(i);
 
-				d.Dispose();
-			}
+                if (b == null)
+                {
+                    continue;
+                }
 
-			ListPool<Binding>.Return(m_attachedBindings);
+                b.Unbind();
 
-			m_attachedBindings = null;
-		}
+                var d = b as IDisposable;
+                if (d == null)
+                {
+                    continue;
+                }
+
+                d.Dispose();
+            }
+
+            ListPool<Binding>.Return(m_attachedBindings);
+
+            m_attachedBindings = null;
+        }
 
 
-		/// <summary>
-		/// Unregisters any notifications that were registered via calls to AddNotification or AddNotification<T>
-		/// </summary>
-		protected void UnregisterAllNotifications()
-		{
-			if(m_notificationBindings != null) {
-				m_notificationBindings.UnbindAll();
-			}
-		}
+        /// <summary>
+        /// Unregisters any notifications that were registered via calls to AddNotification or AddNotification<T>
+        /// </summary>
+        protected void UnregisterAllNotifications()
+        {
+            if (m_notificationBindings != null)
+            {
+                m_notificationBindings.UnbindAll();
+            }
+        }
 
-		public void GetAttachedBindings(ICollection<Binding> result)
-		{
-			if(m_attachedBindings != null) {
-				result.AddRange(m_attachedBindings);
-			}
-		}
+        public void GetAttachedBindings(ICollection<Binding> result)
+        {
+            if (m_attachedBindings != null)
+            {
+                result.AddRange(m_attachedBindings);
+            }
+        }
 
-		protected ListPoolList<Binding> GetAttachedBindings(bool create)
-		{
-			if(m_attachedBindings == null && create) {
-				m_attachedBindings = ListPool<Binding>.Get();
-			}
-			return m_attachedBindings;
-		}
-		
-		public Binding binding
-		{
-			get {
-				return this.safeBinding;
-			}
-		}
-		
+        protected ListPoolList<Binding> GetAttachedBindings(bool create)
+        {
+            if (m_attachedBindings == null && create)
+            {
+                m_attachedBindings = ListPool<Binding>.Get();
+            }
+            return m_attachedBindings;
+        }
+
+        public Binding binding
+        {
+            get
+            {
+                return this.safeBinding;
+            }
+        }
+
         private BindableBinding safeBinding
-		{
-			get {
-				if(m_binding == null) {
+        {
+            get
+            {
+                if (m_binding == null)
+                {
                     m_binding = new BindableBinding();
-				}
-				return m_binding;
-			}
-		}
+                }
+                return m_binding;
+            }
+        }
 
-		protected NotificationBindings GetNotifications(bool create)
-		{
-			if(m_notificationBindings == null && create) {
-				m_notificationBindings = new NotificationBindings();
-			}
-			return m_notificationBindings;
-		}
+        protected NotificationBindings GetNotifications(bool create)
+        {
+            if (m_notificationBindings == null && create)
+            {
+                m_notificationBindings = new NotificationBindings();
+            }
+            return m_notificationBindings;
+        }
 
-		/// <summary>
-		/// True if Bind has been called without a subsequent Unbind.
-		/// Implies events listeners may remain attached, etc.
-		/// </summary>
-		public bool isBound
-		{
-			get; protected set;
-		}
+        /// <summary>
+        /// True if Bind has been called without a subsequent Unbind.
+        /// Implies events listeners may remain attached, etc.
+        /// </summary>
+        public bool isBound
+        {
+            get; protected set;
+        }
 
-		public bool isDestroyed { get; protected set; }
-		
-		virtual protected void OnDestroy()
-		{
-			this.isDestroyed = true;
-			Unbind();
-		}
+        public bool isDestroyed { get; protected set; }
+
+        virtual protected void OnDestroy()
+        {
+            this.isDestroyed = true;
+            Unbind();
+        }
 
 
-		public void DisposeOnUnbind(IDisposable d)
-		{
-			var b = StaticObjectPool<DisposableBinding>.Get();
-			b.Bind(d);
-			Attach(b);
-		}
+        public void DisposeOnUnbind(IDisposable d)
+        {
+            var b = StaticObjectPool<DisposableBinding>.Get();
+            b.Bind(d);
+            Attach(b);
+        }
 
-		public void Bind<T>(IHasValue<T> hasVal, T val) where T : class
-		{
-			var b = StaticObjectPool<ValueHolderBinding<T>>.Get();
-			b.Bind(hasVal, val);
-			Attach(b);
-		}
+        public void Bind<T>(IHasValue<T> hasVal, T val) where T : class
+        {
+            var b = StaticObjectPool<ValueHolderBinding<T>>.Get();
+            b.Bind(hasVal, val);
+            Attach(b);
+        }
 
-		protected void Bind(UnityEvent e, UnityAction a)
-		{
-			var b = StaticObjectPool<UnityEventBinding>.Get();
-			b.Bind(e, a);
-			Attach(b);
-		}
+        protected void Bind(UnityEvent e, UnityAction a)
+        {
+            var b = StaticObjectPool<UnityEventBinding>.Get();
+            b.Bind(e, a);
+            Attach(b);
+        }
 
-		protected void Bind<T>(UnityEvent<T> e, UnityAction<T> a)
-		{
-			var b = StaticObjectPool<UnityEventBinding<T>>.Get();
-			b.Bind(e, a);
-			Attach(b);
-		}
+        protected void Bind<T>(UnityEvent<T> e, UnityAction<T> a)
+        {
+            var b = StaticObjectPool<UnityEventBinding<T>>.Get();
+            b.Bind(e, a);
+            Attach(b);
+        }
 
-		private ListPoolList<Binding> m_attachedBindings;
-		private NotificationBindings m_notificationBindings;
+        private ListPoolList<Binding> m_attachedBindings;
+        private NotificationBindings m_notificationBindings;
         private BindableBinding m_binding;
-	}
-
-
-
+    }
 }
 
 
